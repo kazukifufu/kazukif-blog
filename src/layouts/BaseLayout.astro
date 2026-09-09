@@ -1,0 +1,261 @@
+---
+// src/layouts/BaseLayout.astro
+import Sidebar from '../components/Sidebar.vue';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+
+// 記事一覧を取得し、Sidebar（Vueアイランド）に渡せる形（JSONシリアライズ可能な形）に変換
+const posts = await getCollection('posts');
+const articles = posts.map((post) => {
+  const [category, slug] = post.id.split('/');
+  return {
+    category,
+    slug,
+    title: post.data.title,
+    date: post.data.date.toISOString(), // Date -> ISO文字列に変換してpropsへ
+  };
+});
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body class="site-wrapper">
+    <header class="global-header">
+      <div class="header-left">
+        <!-- ロゴクリックでトップページへ遷移（旧 router-link を通常の <a> に置き換え） -->
+        <a href="/" class="logo clickable" title="トップページへ">
+          <i class="fa-solid fa-pen-nib"></i> <span>Kazuki's Blog. ITは活用する道具である！</span>
+        </a>
+      </div>
+
+      <div class="header-ticker">
+        <div class="ticker-wrapper">
+          <div class="ticker-content" id="ticker-content">
+            【お知らせ】Vue 3 と Cloudflare Pages を使った自作ブログのカスタマイズ連載を更新中！ 🚀 &nbsp;&nbsp;&nbsp;&nbsp;
+            【今週の目標】プロフィール画面に Weekly Compass を導入しました。右上のアバターアイコンからぜひチェックしてください！ ✨
+          </div>
+        </div>
+        <!-- 再生 / 停止 切り替えボタン（単純なトグルのみなのでVueアイランド化はせず、素のJSで実装） -->
+        <button
+          class="ticker-toggle-btn"
+          id="ticker-toggle-btn"
+          title="スクロールを一時停止"
+        >
+          <i class="fa-solid fa-pause" id="ticker-toggle-icon"></i>
+        </button>
+      </div>
+
+      <div class="header-right">
+        <button class="nav-btn"><i class="fa-solid fa-list-ul"></i> List</button>
+        <button class="nav-btn"><i class="fa-regular fa-bell"></i> Notifications</button>
+        <a href="/profile" class="icon-btn" title="プロフィール">
+          <i class="fa-regular fa-user"></i>
+        </a>
+        <div class="user-icon"><i class="fa-regular fa-circle-user"></i></div>
+      </div>
+    </header>
+
+    <div class="app-container">
+      <Sidebar articles={articles} currentPath={Astro.url.pathname} client:load />
+
+      <!-- メイン表示エリア -->
+      <!-- 旧 <router-view /> の位置に、Astroでは <slot /> を使ってページごとの中身を差し込む -->
+      <main class="content-area">
+        <slot />
+      </main>
+    </div>
+
+    <script>
+      // ヘッダーティッカーの再生/停止トグル（旧 App.vue の isPlaying / toggleTicker を移植）
+      // 状態がこの1箇所でしか使われず、他コンポーネントと共有する必要もないため
+      // Vueアイランド化はせず、最小限の素のJavaScriptで実装している
+      const tickerContent = document.getElementById('ticker-content');
+      const toggleBtn = document.getElementById('ticker-toggle-btn');
+      const toggleIcon = document.getElementById('ticker-toggle-icon');
+
+      let isPlaying = true;
+
+      toggleBtn?.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        tickerContent?.classList.toggle('paused', !isPlaying);
+        toggleIcon?.classList.toggle('fa-pause', isPlaying);
+        toggleIcon?.classList.toggle('fa-play', !isPlaying);
+        toggleBtn.title = isPlaying ? 'スクロールを一時停止' : 'スクロールを再開';
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  /* 全体レイアウト */
+  .site-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
+    color: #333;
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
+
+  /* ヘッダー */
+  .global-header {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+    gap: 16px;
+  }
+
+  .header-left .logo {
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-left .logo.clickable {
+    cursor: pointer;
+    user-select: none;
+  }
+  .header-left .logo.clickable:hover {
+    opacity: 0.7;
+  }
+
+  /* ヘッダーの中央ティッカーエリア */
+  .header-ticker {
+    flex: 1;
+    overflow: hidden;
+    font-size: 12px;
+    color: #666;
+    background-color: #f8f9fa;
+    padding: 4px 32px 4px 8px; /* 右側にボタン分のスペース（32px）を確保 */
+    border-radius: 4px;
+    white-space: nowrap;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .ticker-wrapper {
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* アニメーション用コンテンツ */
+  .ticker-content {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%;
+    animation: ticker-scroll 25s linear infinite;
+  }
+
+  /* 停止状態のクラス（isPlaying === false の時に適用） */
+  .ticker-content.paused {
+    animation-play-state: paused;
+  }
+
+  /* 右側に固定配置する切り替えボタン */
+  .ticker-toggle-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 11px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: background-color 0.2s, color 0.2s;
+    z-index: 2;
+  }
+
+  .ticker-toggle-btn:hover {
+    background-color: #e9ecef;
+    color: #333;
+  }
+
+  /* 右から左へ移動させるアニメーション定義 */
+  @keyframes ticker-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+  }
+
+  .nav-btn,
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+  }
+
+  .user-icon {
+    font-size: 18px;
+    color: #555;
+  }
+
+  /* メインコンテナ */
+  .app-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* メインコンテンツ表示域 */
+  .content-area {
+    flex: 1;
+    padding: 32px 48px;
+    overflow-y: auto;
+    background-color: #ffffff;
+  }
+</style>

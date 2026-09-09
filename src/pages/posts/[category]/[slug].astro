@@ -1,0 +1,26 @@
+---
+// src/pages/posts/[category]/[slug].astro
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => {
+    const [category, slug] = post.id.split('/');
+    return { params: { category, slug }, props: { post } };
+  });
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={`${post.data.title} | Kazuki's Blog`}>
+  <article class="markdown-body">
+    <h1>{post.data.title}</h1>
+    <p class="post-meta">
+      {post.data.category} ／ {post.data.date.toLocaleDateString('ja-JP')}
+    </p>
+    <Content />
+  </article>
+</BaseLayout>

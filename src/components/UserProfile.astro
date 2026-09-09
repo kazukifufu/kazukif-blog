@@ -1,0 +1,224 @@
+---
+// src/components/UserProfile.astro
+import myAvatar from '../assets/images/profile-avatar.jpg';
+---
+
+<div class="profile-container">
+  <!-- 上部：基本プロフィール情報（ヘッダー領域） -->
+  <div class="profile-header">
+    <!-- プロファイルの画像を指定 -->
+    <div class="avatar-area">
+      <img src={myAvatar.src} alt="Avatar" class="profile-avatar-img" />
+    </div>
+
+    <div class="profile-title-area">
+      <h1>PROFILE</h1>
+      <p class="subtitle">自己紹介（Self Introduction）</p>
+    </div>
+  </div>
+
+  <!-- 下部：役割と目標（グリッドコンテナ領域） -->
+  <div class="compass-grid">
+    <div class="compass-card card-personal">
+      <div class="card-header">
+        <i class="fa-solid fa-heart"></i>
+        <h3>自分自身 <span class="en-title">Personal</span></h3>
+      </div>
+      <div class="card-body">
+        <p class="objective-label">【今週の目標】</p>
+        <ul class="objective-list">
+          <li>健康管理：毎朝のストレッチと十分な睡眠を確保する。</li>
+          <li>インプット：技術書を今週中に1章分読み進める。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="compass-card card-dev">
+      <div class="card-header">
+        <i class="fa-solid fa-code"></i>
+        <h3>開発者 / ブロガー <span class="en-title">Developer & Blogger</span></h3>
+      </div>
+      <div class="card-body">
+        <p class="objective-label">【今週の目標】</p>
+        <ul class="objective-list">
+          <li>ブログ執筆：Vue 3の解説記事（番外編）を2本公開する。</li>
+          <li>リファクタリング：コンポーネントの分割設計を完了させる。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="compass-card card-family">
+      <div class="card-header">
+        <i class="fa-solid fa-house-user"></i>
+        <h3>ファミリー <span class="en-title">Family & Private</span></h3>
+      </div>
+      <div class="card-body">
+        <p class="objective-label">【今週の目標】</p>
+        <ul class="objective-list">
+          <li>家事・役割：週末に部屋の片付けと機材の整理を行う。</li>
+          <li>コミュニケーション：家族との時間を大切にし、美味しい料理を作る。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="compass-card card-other">
+      <div class="card-header">
+        <i class="fa-solid fa-compass"></i>
+        <h3>その他 / 趣味 <span class="en-title">Other Interests</span></h3>
+      </div>
+      <div class="card-body">
+        <p class="objective-label">【今週の目標】</p>
+        <ul class="objective-list">
+          <li>オーディオ：CDからFLAC形式へのデジタルアーカイブを進める。</li>
+          <li>タスク管理：来週の週間の役割と目標をしっかり見直す。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ① 全体のコンテナ */
+  .profile-container {
+    padding: 30px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* ② 上部ヘッダー */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 35px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 20px;
+  }
+
+  /* 💡 アバター表示エリアの丸型土台 */
+  .avatar-area {
+    position: relative;
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  /* 💡 アバター画像（円形にフィットさせる） */
+  .profile-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-title-area h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0 0 5px 0;
+    color: #1f2937;
+  }
+  .profile-title-area .subtitle {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  /* ③ CSS Gridによる2カラム整列レイアウト */
+  .compass-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+  }
+
+  /* ④ カードの共通スタイル */
+  .compass-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .compass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ⑤ カードヘッダー */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: #f9fafb;
+  }
+  .card-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+    display: flex;
+    flex-direction: column;
+  }
+  .en-title {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  /* ⑥ 役割ごとのテーマカラー（左端の太線とアイコン） */
+  .card-personal { border-left: 5px solid #ec4899; }
+  .card-personal .card-header i { color: #ec4899; font-size: 1.25rem; }
+
+  .card-dev { border-left: 5px solid #3b82f6; }
+  .card-dev .card-header i { color: #3b82f6; font-size: 1.25rem; }
+
+  .card-family { border-left: 5px solid #10b981; }
+  .card-family .card-header i { color: #10b981; font-size: 1.25rem; }
+
+  .card-other { border-left: 5px solid #f59e0b; }
+  .card-other .card-header i { color: #f59e0b; font-size: 1.25rem; }
+
+  /* ⑦ カードボディ & リスト記述 */
+  .card-body {
+    padding: 20px;
+  }
+  .objective-label {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4b5563;
+    letter-spacing: 0.05em;
+  }
+  .objective-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #374151;
+  }
+  .objective-list li {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .objective-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ⑧ レスポンシブ対応（スマホや画面幅が狭いときは1カラムに自動変化） */
+  @media (max-width: 640px) {
+    .compass-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
