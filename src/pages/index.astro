@@ -1,21 +1,174 @@
 ---
 // src/pages/index.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 
-const posts = (await getCollection('posts')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
+// pages コレクションから welcome.md を1件だけ取得
+const welcomeEntry = await getEntry('pages', 'welcome');
+const { Content } = await render(welcomeEntry);
+
+// カテゴリー紹介カード用のデータ（UI構造なのでコード側に保持）
+const categories = [
+  {
+    key: 'web-dev',
+    icon: 'fa-code',
+    title: 'Web開発（Astro / Vue）',
+    description:
+      'Astro・Vue.jsを使った自作ブログの構築連載。Content Collections、動的ルート、Vueアイランド、Cloudflare Pagesへのデプロイまでを実践形式で解説しています。',
+  },
+  {
+    key: 'infra',
+    icon: 'fa-server',
+    title: 'サーバー・インフラ構築',
+    description:
+      'Ubuntu Server、Docker / Dev Containers、Nextcloud、Fess、CoreDNSなど、自宅サーバー環境の構築・運用・トラブルシューティングの記録です。',
+  },
+  {
+    key: 'iot',
+    icon: 'fa-microchip',
+    title: 'IoT・センサー活用',
+    description:
+      'SwitchBotやRaspberry Pi Picoを使った温湿度・CO2センサーの活用例。データ収集からMariaDB / Grafanaでの可視化までをまとめています。',
+  },
+  {
+    key: 'python-dev',
+    icon: 'fa-python',
+    title: 'Pythonプログラミング',
+    description:
+      'tkinterによるカレンダー・スケジュール管理アプリの開発連載（MVCリファクタリング含む）や、uv / pipの使い方、画像処理スクリプトなど。',
+  },
+  {
+    key: 'weather-ml',
+    icon: 'fa-cloud-sun',
+    title: '天気×機械学習',
+    description:
+      '気象APIでのデータ収集に加え、ベランダから撮影した空の写真をPyTorchで学習させ、天気を推定する取り組みを継続中です。',
+  },
+  {
+    key: 'llm-ai',
+    icon: 'fa-robot',
+    title: 'LLM・生成AI活用',
+    description:
+      'Ollama・Dify・LM Studioなど、ローカルLLM環境の構築や、生成AIを実務・趣味に活用するための試行錯誤の記録です。',
+  },
+  {
+    key: 'pc-gadget',
+    icon: 'fa-laptop',
+    title: 'PC・ガジェット活用Tips',
+    description:
+      'PCの初期設定やお手入れ、iPhoneのバックアップ方法など、日々のガジェット活用に関する細かいノウハウをまとめています。',
+  },
+];
 ---
 
 <BaseLayout title="Kazuki's Blog">
-  <h1>最新記事</h1>
-  <ul>
-    {posts.map((post) => (
-      <li>
-        <a href={`/posts/${post.id}`}>{post.data.title}</a>
-        （{post.data.date.toLocaleDateString('ja-JP')}）
-      </li>
-    ))}
-  </ul>
+  <section class="welcome-hero">
+    <h1>{welcomeEntry.data.title}</h1>
+    {welcomeEntry.data.updatedAt && (
+      <p class="updated-at">
+        最終更新日：{welcomeEntry.data.updatedAt.toLocaleDateString('ja-JP')}
+      </p>
+    )}
+    <div class="welcome-lead">
+      <Content />
+    </div>
+  </section>
+
+  <section class="category-overview">
+    <h2>カテゴリー紹介</h2>
+    <div class="category-grid">
+      {categories.map((category) => (
+        <div class={`category-card card-${category.key}`}>
+          <div class="category-card-header">
+            <i class={`fa-solid ${category.icon}`}></i>
+            <h3>{category.title}</h3>
+          </div>
+          <p class="category-card-description">{category.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .welcome-hero {
+    max-width: 720px;
+    margin: 0 auto 48px;
+    text-align: center;
+  }
+  .welcome-hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: #1f2937;
+  }
+  .updated-at {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin: 0 0 20px 0;
+  }
+
+  .welcome-lead {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #4b5563;
+    text-align: left;
+  }
+  .welcome-lead :global(p) {
+    margin: 0 0 12px 0;
+  }
+  .welcome-lead :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .category-overview h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1f2937;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .category-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  .category-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .category-card-header i {
+    font-size: 1.1rem;
+    color: #3b82f6;
+  }
+  .category-card-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .category-card-description {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #6b7280;
+  }
+
+  @media (max-width: 640px) {
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
