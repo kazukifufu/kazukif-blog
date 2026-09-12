@@ -36,15 +36,14 @@ const articles = posts.map((post) => {
       <div class="header-left">
         <!-- ロゴクリックでトップページへ遷移（旧 router-link を通常の <a> に置き換え） -->
         <a href="/" class="logo clickable" title="トップページへ">
-          <i class="fa-solid fa-pen-nib"></i> <span>Kazuki's Blog. ITは活用する道具である！</span>
+          <i class="fa-solid fa-pen-nib"></i> <span>Kazuki's Blog </span>
         </a>
       </div>
 
       <div class="header-ticker">
         <div class="ticker-wrapper">
           <div class="ticker-content" id="ticker-content">
-            【お知らせ】Vue 3 と Cloudflare Pages を使った自作ブログのカスタマイズ連載を更新中！ 🚀 &nbsp;&nbsp;&nbsp;&nbsp;
-            【今週の目標】プロフィール画面に Weekly Compass を導入しました。右上のアバターアイコンからぜひチェックしてください！ ✨
+            【お知らせ】このサイトは順次更新しています。自作したAstro+Vue v3の環境にコンテンツを公開しています&nbsp;&nbsp;&nbsp;&nbsp
           </div>
         </div>
         <!-- 再生 / 停止 切り替えボタン（単純なトグルのみなのでVueアイランド化はせず、素のJSで実装） -->
@@ -133,7 +132,7 @@ const articles = posts.map((post) => {
 
   .header-left .logo {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 18px;
     white-space: nowrap;
     text-decoration: none;
     color: inherit;
@@ -154,7 +153,7 @@ const articles = posts.map((post) => {
   .header-ticker {
     flex: 1;
     overflow: hidden;
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     background-color: #f8f9fa;
     padding: 4px 32px 4px 8px; /* 右側にボタン分のスペース（32px）を確保 */
@@ -176,7 +175,7 @@ const articles = posts.map((post) => {
     display: inline-block;
     white-space: nowrap;
     padding-left: 100%;
-    animation: ticker-scroll 25s linear infinite;
+    animation: ticker-scroll 60s linear infinite;
   }
 
   /* 停止状態のクラス（isPlaying === false の時に適用） */
