@@ -34,7 +34,7 @@ category: "infra"
 
 - ISOイメージのUSBメモリーへの書き込み
   - 今回は32GBのUSBメモリ、ISOイメージ書き込みソフトウェアとして[balena](https://etcher.balena.io)の ETCHER FOR MACOS (ARM64) を使用しました。
-![balenaEtcherの画面](image.png)
+![balenaEtcherの画面](balenaEtcher.png)
     1. Flash from fileをクリックし、ダウンロードしたISOイメージを指定する
     2. Select targetとしてUSBポートに接続したUSBメモリーが表示されていることを確認する
     3. Flash!をクリック
