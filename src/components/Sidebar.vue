@@ -279,6 +279,8 @@ const nextMonth = () => {
   color: #555;
   text-decoration: none;
   border-radius: 4px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .article-list li a:hover {
