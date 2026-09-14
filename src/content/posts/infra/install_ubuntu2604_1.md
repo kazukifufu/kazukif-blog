@@ -16,7 +16,7 @@ category: "infra"
   - BIOS設定画面の起動 F2キー
   - 起動デバイスの選択画面 F7キー
 
-
+---
 ### 導入メディアの準備
 以下は、MacBook Air(macOS Tahoe 26.6.2)で作業を行いました。
 
