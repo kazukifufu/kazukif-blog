@@ -1,5 +1,5 @@
 ---
-title: "運用記録: AstroのAVIF画像最適化に起因するRCE脆弱性（GHSA-26w7-cxv4-gfx2）への対応"
+title: "運用記録: AstroのAVIF画像最適化に起因するRCE脆弱性(GHSA-26w7-cxv4-gfx2)への対応"
 date: "2026-09-16"
 category: "web-dev"
 ---
@@ -21,10 +21,10 @@ remote:      https://github.com/kazukifufu/kazukif-blog/security/dependabot
 | 脆弱性ID | GHSA-26w7-cxv4-gfx2 |
 | 重大度 | CRITICAL |
 | 影響を受けるバージョン | Astro 7.2.8未満 |
-| 修正バージョン | Astro 7.2.8以降（`sharp` 0.35.4が必要） |
-| 原因 | Astroのデフォルト画像サービス（Sharp）が内部で使用する`libheif`の脆弱性 |
+| 修正バージョン | Astro 7.2.8以降(`sharp` 0.35.4が必要) |
+| 原因 | Astroのデフォルト画像サービス(Sharp)が内部で使用する`libheif`の脆弱性 |
 
-**悪意のあるAVIF画像をAstroに最適化処理させることで、リモートコード実行（RCE）が可能になる**というものです。
+**悪意のあるAVIF画像をAstroに最適化処理させることで、リモートコード実行(RCE)が可能になる**というものです。
 `astro:assets`はビルド時に画像のリサイズ・フォーマット変換を自動で行いますが、その処理の中核を担っているのがSharpというライブラリであり、Sharpがさらに内部で使っている`libheif`(AVIF/HEIF形式の画像を扱うライブラリ)に今回の問題がありました。
 
 ### 自サイトでのリスク評価
@@ -52,7 +52,7 @@ npm install astro@latest
 
 ### `package.json`はどう変わるか
 
-`npm create astro@latest`で作成したプロジェクトの`package.json`は、通常`astro`のバージョンをキャレット（`^`）付きで指定しています。
+`npm create astro@latest`で作成したプロジェクトの`package.json`は、通常`astro`のバージョンをキャレット(`^`)付きで指定しています。
 
 ```json
 {
@@ -62,7 +62,7 @@ npm install astro@latest
 }
 ```
 
-`^7.0.6`は「7.0.6以上、8.0.0未満（メジャーバージョンが変わらない範囲）で最新版を使ってよい」という意味です。今回の修正版（`7.2.8`以降）はこの範囲に収まるため、`npm install astro@latest`を実行すると、
+`^7.0.6`は「7.0.6以上、8.0.0未満(メジャーバージョンが変わらない範囲)で最新版を使ってよい」という意味です。今回の修正版(`7.2.8`以降)はこの範囲に収まるため、`npm install astro@latest`を実行すると、
 
 ```json
 {
@@ -78,7 +78,7 @@ npm install astro@latest
 
 #### 依存パッケージとの整合性確認
 
-`astro`本体だけでなく、`@astrojs/vue`のような統合パッケージにも、`astro`本体との対応バージョン範囲（`peerDependencies`）が設定されています。更新後は念のため以下で確認しました。
+`astro`本体だけでなく、`@astrojs/vue`のような統合パッケージにも、`astro`本体との対応バージョン範囲(`peerDependencies`)が設定されています。更新後は念のため以下で確認しました。
 
 ```bash
 npm ls astro
@@ -92,7 +92,7 @@ npm ls astro
 npm outdated
 ```
 
-`Current`（現在のバージョン）・`Wanted`（`package.json`の範囲内で入れられる最新版）・`Latest`（絶対的な最新版）を一覧できるため、今回の`astro`以外にも更新すべきパッケージがないかを合わせて確認しました。
+`Current`(現在のバージョン)・`Wanted`(`package.json`の範囲内で入れられる最新版)・`Latest`(絶対的な最新版)を一覧できるため、今回の`astro`以外にも更新すべきパッケージがないかを合わせて確認しました。
 
 #### ビルド・表示の確認
 
@@ -108,5 +108,5 @@ npm run preview
 今回の一件を踏まえ、今後は以下の方針で運用することにしました。
 
 - GitHubリポジトリのDependabotアラート機能は有効にしたままにしておく
-- CRITICAL・HIGHクラスの通知が来た場合は、リスク評価（自サイトがその攻撃経路を持っているか）を行った上で、速やかに`npm install <パッケージ名>@latest`または「Create Dependabot security update」ボタンで対応する
+- CRITICAL・HIGHクラスの通知が来た場合は、リスク評価(自サイトがその攻撃経路を持っているか)を行った上で、速やかに`npm install <パッケージ名>@latest`または「Create Dependabot security update」ボタンで対応する
 - 更新後は`npm ls`・`npm outdated`・`npm run build`のセットを毎回のルーティンとして実行する
