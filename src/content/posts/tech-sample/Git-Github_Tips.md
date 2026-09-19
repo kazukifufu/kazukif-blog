@@ -34,7 +34,7 @@ category: "tech"
   - 出力例
     ```plaintext
     * 9c9f151 (HEAD -> main) add operation_log_20260919.md
-    | * 96f0017 (origin/main) Merge pull request #12 from dependabot/...
+    | * 96f0017 (origin/main, origin/HEAD) Merge pull request #12 from dependabot/...
     | * 4a5b6c7 Bump package versions
     |/  
     * 9a88205 Previous common commit
