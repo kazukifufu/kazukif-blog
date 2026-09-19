@@ -55,7 +55,7 @@ category: "tech"
   - 出力例
     ```
     * a1b2c3d (HEAD -> main) add operation_log_20260919.md
-    * 96f0017 (origin/main, origin/HEAD) Merge pull request #1 from kazukifufu/dependabot/npm_and_yarn/devalue-5.9.4
+    * 96f0017 (origin/main, origin/HEAD) Merge pull request #12 from dependabot/...
     |\  
     | * 4a5b6c7 Bump package versions
     |/  
