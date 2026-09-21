@@ -40,7 +40,7 @@ category: "infra"
 
     ![alt text](ubuntu2604-standardapp.png)
 
-9. コンピュータの最適化の画面では、導入先のPCにNVIDIAのGPUが搭載されているため、1つ目の項目にチェックし、次へをクリックする
+9. コンピュータの最適化の画面では、導入先のPCにNVIDIAのGPUが搭載されているため、1つ目の項目にチェックし、次へをクリックする(ご自身のPCの構成に応じて該当する項目を選択してください)
 
     ![alt text](ubuntu2604-destination.png)
 
