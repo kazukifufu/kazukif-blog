@@ -21,6 +21,24 @@ const { Content } = await render(post);
     <p class="post-meta">
       {post.data.category} ／ {post.data.date.toLocaleDateString('ja-JP')}
     </p>
+    {post.data.dateRevised && (
+      <p class="date-revised">
+        更新日：{post.data.dateRevised.toLocaleDateString('ja-JP')}
+      </p>
+    )}
     <Content />
   </article>
 </BaseLayout>
+
+<style>
+  .post-meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 8px 0 24px 0;
+  }
+  .date-revised {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin: -16px 0 24px 0;
+  }
+</style>

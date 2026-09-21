@@ -8,6 +8,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    dateRevised: z.coerce.date().optional(),
     category: z.enum([
       'web-dev',
       'infra',
