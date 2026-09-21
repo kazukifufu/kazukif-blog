@@ -1,5 +1,5 @@
 ---
-title: "Ubuntu 26.04 LTSの導入(その5) 導入の流れ"
+title: "Ubuntu 26.04 LTSの導入(その5) インストールの流れ"
 date: "2026-09-21"
 category: "infra"
 ---
@@ -8,7 +8,7 @@ category: "infra"
 
 [Ubuntu 26.04 LTSの導入(その1)](https://kazukif-blog.pages.dev/posts/infra/install_ubuntu2604_1/)で作成した導入メディアであるUSBメモリーをPCのUSBポートに挿入する(複数のUSBポートがある場合は、USB3.0のポートを選択してください)。
 
-1. PCの電源を投入直後からF7キーを連続して押し、起動デバイスの選択画面を表示させ、USBメモリーを選択する(この手順は使用PCにより異なるため事前に確認してください)。しばらく待つと以下の画面が表示されるので、"Try to Install Ubuntuを選択し、Enterキーを押す
+1. PCの電源を投入直後からF7キーを連続して押し、起動デバイスの選択画面を表示させ、USBメモリーを選択する(この手順は使用PCにより異なるため事前に確認してください)。しばらく待つと以下の画面が表示されるので、"Try to Install Ubuntu"を選択し、Enterキーを押す
 
     ![alt text](ubuntu2604-gnumenu.png)
 
@@ -16,7 +16,7 @@ category: "infra"
 
     ![alt text](ubuntu2604-language.png)
 
-3. 次に、Ubuntu のアクセシビリティをカスタマイズする画面が表示されるが 次へのwクリックする(後で変更することは可能です) 
+3. 次に、Ubuntu のアクセシビリティをカスタマイズする画面が表示されるが 次へをクリックする(後で変更することは可能です) 
 
     ![alt text](ubuntu2604-accesibility.png)
 
@@ -24,7 +24,7 @@ category: "infra"
 
     ![alt text](ubuntu2604-keyboard.png)
 
-5. 次に、ネットワークに接続の画面が表示されるので、使用しているネッtワークを選択して、次へをクリックする
+5. 次に、ネットワークに接続の画面が表示されるので、使用しているネットワークを選択して、次へをクリックする
 
     ![alt text](ubuntu2604-network.png)
 
@@ -44,11 +44,11 @@ category: "infra"
 
     ![alt text](ubuntu2604-destination.png)
 
-10. ディスクのセットアップでは、導入先に応じていづれかを選択し、次へをクリックする
+10. ディスクのセットアップでは、導入先に応じていずれかを選択し、次へをクリックする
 
     ![alt text](ubuntu2604-disk.png)
 
-11. 暗号化とファイルシステムでは、いづれかを選択し、次へをクリックする()
+11. 暗号化とファイルシステムでは、いずれかを選択し、次へをクリックする
 
     ![alt text](ubuntu2604-encryption.png)
 
@@ -84,7 +84,7 @@ category: "infra"
 
     ![alt text](ubuntu2604-initialsetup1.png)    ![alt text](ubuntu2604-initialsetup2.png)    ![alt text](ubuntu2604-initialsetup3.png)    ![alt text](ubuntu2604-initialsetup4.png)    ![alt text](ubuntu2604-initialsetup5.png)    ![alt text](ubuntu2604-initialsetup6.png)
 
-20. 下記の画面が表示されれば、インストール作業は終了のなります。
+20. 下記の画面が表示されれば、インストール作業は終了となります。
 
     ![alt text](ubuntu2604-installdone.png)
 
