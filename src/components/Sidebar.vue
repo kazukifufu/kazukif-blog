@@ -216,23 +216,29 @@ const nextMonth = () => {
 </template>
 
 <style scoped>
-/* サイドバー（固定幅 280px） */
+/* サイドバー（固定幅 280px、ウォールナット材の書架をイメージ） */
 .sidebar {
   width: 280px;
   flex-shrink: 0;
-  border-right: 1px solid #e0e0e0;
-  background-color: #fdfdfd;
-  padding: 16px;
+  border-right: 1px solid var(--color-brass-line, rgba(176, 141, 87, 0.35));
+  background-color: var(--color-wood-mid, #4a3826);
+  padding: 20px 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  color: var(--color-paper, #ede6d6);
 }
 
 .sidebar h2 {
+  font-family: var(--font-display, 'Shippori Mincho', serif);
   font-size: 16px;
-  margin: 0 0 8px 0;
-  color: #222;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--color-brass, #cba86b);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-brass-line, rgba(176, 141, 87, 0.3));
+  padding-bottom: 10px;
 }
 
 /* カテゴリーリスト（箇条書きのリセット） */
@@ -244,61 +250,77 @@ const nextMonth = () => {
 }
 
 .category-item {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .category-title {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 6px 4px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   user-select: none;
+  color: var(--color-paper, #ede6d6);
+  border-radius: 2px;
+  transition: background-color 0.15s ease;
+}
+
+.category-title:hover {
+  background-color: rgba(237, 230, 214, 0.06);
 }
 
 .category-title .arrow {
   font-size: 10px;
-  color: #888;
+  color: var(--color-brass, #cba86b);
 }
 
 .article-list {
-  padding-left: 16px;
+  padding-left: 14px;
+  border-left: 1px solid var(--color-brass-line, rgba(176, 141, 87, 0.25));
+  margin-left: 8px;
 }
 
 .article-list li {
   font-size: 13px;
   margin-top: 2px;
-  border-radius: 4px;
 }
 
 .article-list li a {
   display: block;
-  padding: 4px 8px;
-  color: #555;
+  padding: 6px 10px;
+  color: rgba(237, 230, 214, 0.72);
   text-decoration: none;
-  border-radius: 4px;
+  border-left: 3px solid transparent;
   word-break: keep-all;
   overflow-wrap: anywhere;
+  line-height: 1.5;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .article-list li a:hover {
-  background-color: #f0f0f0;
-  color: #000;
+  color: var(--color-paper, #ede6d6);
+  background-color: rgba(237, 230, 214, 0.06);
 }
 
+/* 現在地表示：しおり（ブックマーク）風の緑のリボン */
 .article-list li.active a {
-  background-color: #e6f7ff;
-  color: #1890ff;
-  font-weight: 500;
+  background-color: rgba(122, 168, 148, 0.14);
+  border-left: 3px solid var(--color-lamp-green, #6fa88f);
+  color: var(--color-paper, #ede6d6);
+  font-weight: 600;
 }
 
-/* カレンダー部分 */
+/* カレンダー部分：書架に置かれた「紙の卓上カレンダー」として、背景を反転させたカードにする */
 .sidebar-calendar {
   margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
+  padding: 14px;
+  background-color: var(--color-paper, #f5f0e3);
+  border: 1px solid var(--color-brass-line, rgba(176, 141, 87, 0.35));
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  color: var(--color-ink, #2a2118);
 }
 
 .calendar-header {
@@ -309,17 +331,24 @@ const nextMonth = () => {
 }
 
 .calendar-title {
-  font-weight: bold;
+  font-family: var(--font-display, 'Shippori Mincho', serif);
+  font-weight: 600;
   font-size: 13px;
+  color: var(--color-ink, #2a2118);
 }
 
 .cal-btn {
   background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid rgba(43, 32, 22, 0.25);
+  border-radius: 2px;
   cursor: pointer;
   padding: 2px 8px;
   font-size: 12px;
+  color: var(--color-ink, #2a2118);
+}
+
+.cal-btn:hover {
+  background-color: rgba(43, 32, 22, 0.06);
 }
 
 .calendar-weekdays {
@@ -327,44 +356,66 @@ const nextMonth = () => {
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-size: 11px;
-  color: #888;
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--color-ink-muted, #6f6150);
+  margin-bottom: 6px;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 4px;
 }
 
 .day-cell {
+  position: relative;
   aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 4px;
-  color: #444;
+  color: var(--color-ink, #2a2118);
+}
+
+.day-cell.empty-cell {
+  visibility: hidden;
 }
 
 .day-cell.has-article {
   cursor: pointer;
-  font-weight: bold;
-  color: #1890ff;
-  background-color: #e6f7ff;
+  font-weight: 700;
+  color: #24392f;
+  background-color: rgba(111, 168, 143, 0.22);
+}
+
+/* 「記事のある日」を色以外でも判別できるよう、下に小さな点を追加 */
+.day-cell.has-article::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-lamp-green, #6fa88f);
 }
 
 .day-cell.has-article:hover {
-  background-color: #bae7ff;
+  background-color: rgba(111, 168, 143, 0.36);
 }
 
 .day-cell.is-today {
-  border: 1px solid #1890ff;
+  border: 2px solid #9c7a3f;
+  font-weight: 700;
 }
 
 .day-cell.is-selected {
-  background-color: #1890ff !important;
-  color: #fff !important;
+  background-color: var(--color-lamp-green, #6fa88f) !important;
+  color: #1b241f !important;
+}
+
+.day-cell.is-selected::after {
+  background-color: #1b241f;
 }
 
 /* 絞り込み状態を表示するエリア全体 */
@@ -380,24 +431,24 @@ const nextMonth = () => {
 }
 
 .filter-text {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.4;
-  color: #333333;
+  color: var(--color-paper, #ede6d6);
 }
 
 .clear-btn {
   font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background-color: #e0e0e0;
-  color: #444;
-  border: none;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background-color: rgba(237, 230, 214, 0.1);
+  color: var(--color-paper, #ede6d6);
+  border: 1px solid var(--color-brass-line, rgba(176, 141, 87, 0.3));
   cursor: pointer;
   white-space: nowrap;
 }
 
 .clear-btn:hover {
-  background-color: #d0d0d0;
+  background-color: rgba(237, 230, 214, 0.18);
 }
 </style>

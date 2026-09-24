@@ -30,6 +30,12 @@ const articles = posts.map((post) => {
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Noto+Serif+JP:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body class="site-wrapper">
     <header class="global-header">
@@ -98,15 +104,30 @@ const articles = posts.map((post) => {
 </html>
 
 <style>
+  /* ===== 図書館テーマ：デザイントークン ===== */
+  :global(:root) {
+    --color-bg: #ede6d6; /* 経年紙の背景 */
+    --color-paper: #f5f0e3; /* 開いたページ（コンテンツ領域） */
+    --color-wood-dark: #2b2016; /* ウォールナット材（ヘッダー） */
+    --color-wood-mid: #4a3826; /* ウォールナット材（サイドバー） */
+    --color-brass: #cba86b; /* 真鍮 */
+    --color-brass-line: rgba(176, 141, 87, 0.35); /* 真鍮の罫線 */
+    --color-lamp-green: #6fa88f; /* 閲覧室ランプのガラス */
+    --color-ink: #2a2118; /* 本文インク */
+    --color-ink-muted: #6f6150; /* 補足テキスト */
+    --font-display: 'Shippori Mincho', serif;
+    --font-body: 'Noto Serif JP', serif;
+  }
+
   /* 全体レイアウト */
   .site-wrapper {
     display: flex;
     flex-direction: column;
     width: 100vw;
     height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-      sans-serif;
-    color: #333;
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: var(--color-bg);
     box-sizing: border-box;
     margin: 0;
   }
@@ -117,28 +138,34 @@ const articles = posts.map((post) => {
     box-sizing: inherit;
   }
 
-  /* ヘッダー */
+  /* ヘッダー（書架の上端をイメージしたウォールナット材） */
   .global-header {
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 0 20px;
+    background-color: var(--color-wood-dark);
+    border-bottom: 2px solid var(--color-brass);
     flex-shrink: 0;
     gap: 16px;
   }
 
   .header-left .logo {
-    font-weight: bold;
+    font-family: var(--font-display);
+    font-weight: 600;
     font-size: 18px;
     white-space: nowrap;
     text-decoration: none;
-    color: inherit;
+    color: var(--color-paper);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .header-left .logo i {
+    color: var(--color-brass);
   }
 
   .header-left .logo.clickable {
@@ -146,7 +173,7 @@ const articles = posts.map((post) => {
     user-select: none;
   }
   .header-left .logo.clickable:hover {
-    opacity: 0.7;
+    opacity: 0.8;
   }
 
   /* ヘッダーの中央ティッカーエリア */
@@ -154,10 +181,11 @@ const articles = posts.map((post) => {
     flex: 1;
     overflow: hidden;
     font-size: 14px;
-    color: #666;
-    background-color: #f8f9fa;
+    color: rgba(237, 230, 214, 0.85);
+    background-color: rgba(237, 230, 214, 0.07);
+    border: 1px solid var(--color-brass-line);
     padding: 4px 32px 4px 8px; /* 右側にボタン分のスペース（32px）を確保 */
-    border-radius: 4px;
+    border-radius: 2px;
     white-space: nowrap;
     position: relative;
     display: flex;
@@ -192,20 +220,20 @@ const articles = posts.map((post) => {
     background: none;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: var(--color-brass);
     font-size: 11px;
     padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 3px;
+    border-radius: 2px;
     transition: background-color 0.2s, color 0.2s;
     z-index: 2;
   }
 
   .ticker-toggle-btn:hover {
-    background-color: #e9ecef;
-    color: #333;
+    background-color: rgba(237, 230, 214, 0.12);
+    color: var(--color-paper);
   }
 
   /* 右から左へ移動させるアニメーション定義 */
@@ -221,7 +249,7 @@ const articles = posts.map((post) => {
   .header-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     white-space: nowrap;
   }
 
@@ -231,16 +259,21 @@ const articles = posts.map((post) => {
     border: none;
     cursor: pointer;
     font-size: 13px;
-    color: #555;
+    color: rgba(237, 230, 214, 0.75);
     display: flex;
     align-items: center;
     gap: 4px;
     text-decoration: none;
   }
 
+  .nav-btn:hover,
+  .icon-btn:hover {
+    color: var(--color-brass);
+  }
+
   .user-icon {
     font-size: 18px;
-    color: #555;
+    color: var(--color-brass);
   }
 
   /* メインコンテナ */
@@ -250,11 +283,21 @@ const articles = posts.map((post) => {
     overflow: hidden;
   }
 
-  /* メインコンテンツ表示域 */
+  /* メインコンテンツ表示域（開いた本のページをイメージ） */
   .content-area {
     flex: 1;
     padding: 32px 48px;
     overflow-y: auto;
-    background-color: #ffffff;
+    background-color: var(--color-paper);
+  }
+
+  .content-area :global(h1) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .content-area :global(a) {
+    color: var(--color-lamp-green);
   }
 </style>
