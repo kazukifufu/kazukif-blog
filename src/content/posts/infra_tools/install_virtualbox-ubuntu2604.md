@@ -2,7 +2,7 @@
 title: "Ubuntu 26.04 LTSへのVirtualBox導入とUEFIセキュアブート対応"
 date: "2026-09-20"
 dateRevised: "2026-09-21"
-category: "infra"
+category: "infra_tools"
 ---
 
 ### 概要

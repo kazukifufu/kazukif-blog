@@ -37,9 +37,17 @@ const currentSlug = computed(() => {
 /* Astro側で既にビルド時に取得済みのデータが props で渡されるため、            */
 /* computed だけで完結する                                                    */
 /* -------------------------------------------------------------------------- */
+
 const menuData = computed(() => {
   const structure: Record<string, Article[]> = {}
-  for (const article of props.articles) {
+  // 日付の昇順（古い順）に並び替えてからグループ化する。
+  // ファイル名の文字列比較順のままだと、"install_ubuntu2604-10" が
+  // "install_ubuntu2604-2" より前に来てしまう（"-1" < "-10" < "-2" という
+  // 辞書順比較のため）ので、日付という数値的に意味のある値でソートする。
+  const sortedArticles = [...props.articles].sort(
+    (a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()
+  )
+  for (const article of sortedArticles) {
     if (!structure[article.category]) {
       structure[article.category] = []
     }

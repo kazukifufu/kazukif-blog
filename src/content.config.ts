@@ -12,6 +12,7 @@ const posts = defineCollection({
     category: z.enum([
       'web-dev',
       'infra',
+      'infra_tools',
       'iot',
       'python-dev',
       'weather-ml',
