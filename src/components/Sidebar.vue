@@ -37,7 +37,6 @@ const currentSlug = computed(() => {
 /* Astro側で既にビルド時に取得済みのデータが props で渡されるため、            */
 /* computed だけで完結する                                                    */
 /* -------------------------------------------------------------------------- */
-
 const menuData = computed(() => {
   const structure: Record<string, Article[]> = {}
   // 日付の昇順（古い順）に並び替えてからグループ化する。
@@ -55,6 +54,10 @@ const menuData = computed(() => {
   }
   return structure
 })
+
+// カテゴリの表示順はアルファベット順にする（menuDataのキー挿入順＝各カテゴリの
+// 最初の記事の日付順になってしまうため、カテゴリ名だけを別途ソートして使う）
+const sortedCategoryNames = computed(() => Object.keys(menuData.value).sort())
 
 // 初期状態では全カテゴリーを展開（旧 App.vue の onMounted 内処理を移植）
 const expandedCategories = ref<Record<string, boolean>>(
@@ -167,9 +170,9 @@ const nextMonth = () => {
       <button class="clear-btn" @click="clearFilter">解除</button>
     </div>
 
-    <!-- カテゴリー＆記事リスト -->
+    <!-- カテゴリー＆記事リスト（カテゴリはアルファベット順に表示） -->
     <ul class="category-list">
-      <li v-for="(articles, category) in menuData" :key="category" class="category-item">
+      <li v-for="category in sortedCategoryNames" :key="category" class="category-item">
         <div class="category-title" @click="toggleCategory(category)">
           <span class="arrow">{{ expandedCategories[category] ? '▼' : '▶' }}</span>
           {{ category }}
@@ -177,7 +180,7 @@ const nextMonth = () => {
         <transition name="slide">
           <ul v-if="expandedCategories[category]" class="article-list">
             <li
-              v-for="article in articles"
+              v-for="article in menuData[category]"
               :key="`${article.category}/${article.slug}`"
               v-show="!selectedDate || article.date.slice(0, 10) === selectedDate"
               :class="{ active: currentCategory === article.category && currentSlug === article.slug }"
