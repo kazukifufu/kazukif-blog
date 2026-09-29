@@ -36,13 +36,3 @@ category: "infra"
 
 - SSH接続中の場合の注意
   SSH経由でリモート操作(別 PC やサーバーへ接続)している場合、事前に SSH の通信ポート(デフォルト: 22/tcp)を許可せずに sudo ufw enable を実行すると、現在の接続が切断されて再接続できなくなる危険があります。リモート操作中の場合は、Firewallを有効化する前に許可ルールを追加 `sudo ufw allow ssh` してください。
-
-
-- よく使うUFW操作コマンド
-  | 操作 | コマンド |
-  | --- | --- |
-  | **特定のポートを許可**(例: HTTP 80番) | `sudo ufw allow 80/tcp` |
-  | **特定のポートを拒否** | `sudo ufw deny 80/tcp` |
-  | **ルール番号付きで状態表示** | `sudo ufw status numbered` |
-  | **設定したルールを削除** | `sudo ufw delete <ルール番号>` |
-  | **一時的に無効化(OFF)に戻す** | `sudo ufw disable` |

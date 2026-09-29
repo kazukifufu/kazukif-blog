@@ -1,6 +1,7 @@
 ---
 title: "Ubuntu 26.04 LTSの導入(その8) SSHサーバーの導入と設定"
 date: "2026-09-24"
+dateRevised: "2026-09-29"
 category: "infra"
 ---
 
