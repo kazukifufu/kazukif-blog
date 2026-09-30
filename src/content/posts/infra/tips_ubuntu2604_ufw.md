@@ -1,5 +1,5 @@
 ---
-title: "Ubuntu 26.04 LTS Tips(その1) ファイアウォール(UFW)のログ確認方法とポート開放・削除方法"
+title: "Ubuntu 26.04 LTS Tips ファイアウォール(UFW)のログ確認方法とポート開放・削除方法"
 date: "2026-09-29"
 category: "infra"
 ---
