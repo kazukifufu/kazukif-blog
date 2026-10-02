@@ -22,10 +22,6 @@ category: "infra_tools"
     ```
 
 
-- 接続方法
-  - クライアント側への `cloudflared` 導入が不要で、スマホ・タブレットから接続可能なブラウザ経由とする
-
-
 - Cloudflare側の設定
   - Tunnelの新設
     1. Cloudflareの左メニューから Zero Trust > Networks > Tunnels & Mesh を開きます
@@ -33,8 +29,6 @@ category: "infra_tools"
     3. Cloudflaredを選択
     4. トンネル名を入力して、Save tunnelボタンをクリック
     5. Choose environment画面のコマンド内に ey... から始まる長い**トンネルトークン(TUNNEL_TOKEN)**が表示されるので、手元にコピーしておく
-
-  - Public Hostnameの設定
 
     
 - Ubuntu26.04 LTS側の設定
