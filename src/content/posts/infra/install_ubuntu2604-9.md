@@ -1,6 +1,7 @@
 ---
 title: "Ubuntu 26.04 LTSの導入(その9) 固定IPアドレスの設定"
 date: "2026-09-25"
+dateRevised: "2026-10-04"
 category: "infra"
 ---
 
@@ -156,6 +157,21 @@ category: "infra"
   ```
 
   どちらも正常に応答があれば、固定IPアドレス化の作業は完了です。
+
+- rendererの確認方法
+  - Ubuntuではバックエンドとして systemd-networkd と NetworkManager の両方が利用可能であり、デフォルトの選択肢は「デスクトップ版（Desktop）」か「サーバー版（Server）」かによって異なります。
+    - Ubuntu 26.04 LTS においても従来と同様の役割分担となっています。
+      - Desktop（デスクトップ版）: NetworkManager がデフォルト
+        - Wi-Fi設定、VPN、モバイル回線、GUI（設定画面やタスクトレイ）からの切り替えなど、ユーザーによる頻繁なネットワーク変更に対応するため NetworkManager が使用されます。
+      - Server（サーバー版）: systemd-networkd がデフォルト
+        - サーバー環境向けの軽量で安定したネットワーク管理を目的として、systemd 統合の systemd-networkd が使用されます。
+  なお、Ubuntu のネットワーク設定自体は Netplan（/etc/netplan/*.yaml）という抽象化レイヤーを介して管理されています。どちらのレンダラー（バックエンド）を使用しているかは、設定ファイルの renderer 項目で指定します。
+
+  - 現在使用中の環境でどちらが動作しているかは、ターミナルで以下のコマンドを実行することで確認できます。
+
+    ```bash
+    systemctl is-active NetworkManager systemd-networkd
+    ```
 
 - 注意点
 
