@@ -1,6 +1,7 @@
 ---
 title: "NextcloudをDocker上で動かす "
 date: "2026-10-05"
+dateRevised: "2026-10-06"
 category: "infra_tools"
 ---
 
@@ -104,10 +105,11 @@ category: "infra_tools"
 
 - ローカル直接アクセスとCloudflare経由アクセスの両立の仕組み
   - TRUSTED_PROXIES が正しく機能します。Cloudflare 経由でアクセスした場合 ([https://your-domain.com](https://your-domain.com))
-    - Cloudflare Tunnel が Nextcloud へリクエストを転送する際、暗号化通信であることを示す X-Forwarded-Proto: https というヘッダーを付与します。
-    - Nextcloud は TRUSTED_PROXIES(プライベートIP帯)からの通信を信頼するため、このヘッダーを見て自動的に HTTPS 通信として認識し、生成するリンクも https:// になります。
+    - Cloudflare Tunnel が Nextcloud へリクエストを転送する際、暗号化通信であることを示す X-Forwarded-Proto: https というヘッダーを付与します
+    - Nextcloud は TRUSTED_PROXIES(プライベートIP帯)からの通信を信頼するため、このヘッダーを見て自動的に HTTPS 通信として認識し、生成するリンクも https:// になります
   - ローカル IP でアクセスした場合
-    - リバースプロキシを通さない直接の HTTP アクセスとなるため、Nextcloud は普通に HTTP 通信として処理します。前回のような SSL エラー(リダイレクトループ)は発生しません。
+    - リバースプロキシを通さない直接の HTTP アクセスとなるため、Nextcloud は普通に HTTP 通信として処理します。前回のような SSL エラー(リダイレクトループ)は発生しません
+    - Docker コンテナへの通信は、Linux 内部では「転送(FORWARD)」パケットとして処理されます。UFW の設定ファイル(/etc/default/ufw)にある転送ポリシーが標準の DROP になっていると、Docker が追加したルーティングルールよりも UFW の FORWARD ブロックが優先されて通信が切断されます。`sudo ufw allow 11000`によりポートを開けることで FORWARD 通信が許可されるようになります
 
 - 両立させる際の実践チェックポイント
   - 両方のルートからアクセスする場合、Nextcloud の「信頼できるドメイン (trusted_domains)」に両方のホスト名を登録しておく必要があります。もし Cloudflare 経由でアクセスした際に 「信頼できないドメインからのアクセスです (Access through untrusted domain)」 という画面が出た場合は、以下のいずれかの方法でドメインを追加してください。
@@ -116,6 +118,3 @@ category: "infra_tools"
     ```bash
     docker exec -u www-data nextcloud-app php occ config:system:set trusted_domains 2 --value="nextcloud.yourdomain.com"
     ```
-
-    - デフォルトのDocker環境であれば、UFWでポート許可(sudo ufw allow 11000)を行う必要はありません。
-      - Dockerは起動時にLinuxのルーティング機能(iptables)を直接操作します。そのため、ports: - "11000:80" と指定してコンテナを起動すると、UFWの制限ルール(deny)を自動的にバイパスしてポートを開開放します。そのため、別ホストの Cloudflare Tunnel や宅内LANのPCからにアクセスする場合、UFWで特別に許可を追加しなくても通信が通ります。
