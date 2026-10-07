@@ -5,9 +5,13 @@ import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
+
   return posts.map((post) => {
     const [category, slug] = post.id.split('/');
-    return { params: { category, slug }, props: { post } };
+    return {
+      params: { category, slug },
+      props: { post },
+    };
   });
 }
 
@@ -31,14 +35,70 @@ const { Content } = await render(post);
 </BaseLayout>
 
 <style>
+  /* ===== リングノート風デザイン ===== */
+  .markdown-body {
+    position: relative;
+    padding: 36px 40px 48px 104px; /* 左側はリング＋赤線のぶん広めに確保 */
+    background-color: #faf7ee;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(42, 33, 24, 0.18);
+
+    /* 横罫線（ノートの罫線） */
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      rgba(107, 143, 165, 0.22) 32px
+    );
+    background-size: 100% 32px;
+    background-position: 0 90px; /* タイトル行の下から罫線を開始 */
+    background-repeat: repeat-y;
+    line-height: 32px; /* 本文の行間を罫線の間隔に揃える */
+  }
+
+  /* 左の赤い余白線（ノート特有の区切り線） */
+  .markdown-body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 76px;
+    width: 2px;
+    background-color: rgba(196, 90, 90, 0.5);
+  }
+
+  /* スパイラル製本のリング（パンチ穴） */
+  .markdown-body::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    bottom: 28px;
+    left: 30px;
+    width: 18px;
+    background-image: radial-gradient(
+      circle,
+      rgba(42, 33, 24, 0.28) 0 6px,
+      transparent 7px
+    );
+    background-repeat: repeat-y;
+    background-size: 18px 34px;
+    background-position: center top;
+  }
+
+  .markdown-body h1 {
+    line-height: 1.4; /* タイトルは罫線に縛られず読みやすい行間を優先 */
+  }
+
   .post-meta {
     font-size: 0.85rem;
     color: #6b7280;
     margin: 8px 0 24px 0;
+    line-height: 1.4;
   }
   .date-revised {
     font-size: 0.8rem;
     color: #9ca3af;
     margin: -16px 0 24px 0;
+    line-height: 1.4;
   }
 </style>
