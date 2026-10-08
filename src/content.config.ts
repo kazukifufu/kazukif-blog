@@ -13,6 +13,7 @@ const posts = defineCollection({
       'web-dev',
       'infra',
       'infra_tools',
+      'infra_howto',
       'iot',
       'python-dev',
       'weather-ml',
