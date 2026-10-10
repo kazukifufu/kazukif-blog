@@ -23,13 +23,16 @@ const { Content } = await render(post);
   <article class="markdown-body">
     <h1>{post.data.title}</h1>
     <p class="post-meta">
-      {post.data.category} ／ {post.data.date.toLocaleDateString('ja-JP')}
+      カテゴリ: {post.data.category} / 作成日: {post.data.date.toLocaleDateString('ja-JP')}
+      {post.data.dateRevised && (
+        <>
+          {' / '}
+          <span class="date-revised">
+            更新日: {post.data.dateRevised.toLocaleDateString('ja-JP')}
+          </span>
+        </>
+      )}
     </p>
-    {post.data.dateRevised && (
-      <p class="date-revised">
-        更新日：{post.data.dateRevised.toLocaleDateString('ja-JP')}
-      </p>
-    )}
     <Content />
   </article>
 </BaseLayout>
@@ -96,9 +99,6 @@ const { Content } = await render(post);
     line-height: 1.4;
   }
   .date-revised {
-    font-size: 0.8rem;
-    color: #9ca3af;
-    margin: -16px 0 24px 0;
-    line-height: 1.4;
+    color: #2f6fb0;
   }
 </style>
