@@ -1,4 +1,4 @@
---
+---
 title: "NextcloudをDocker上で動かす: 外部ストレージ上の写真をMemoriesとRecognize(AI)で管理"
 date: "2026-10-10"
 category: "infra_tools"
