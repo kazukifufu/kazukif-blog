@@ -1,6 +1,7 @@
 ---
 title: "PhotoPrismをDocker上で動かす "
 date: "2026-10-11"
+dateRevised: "2026-10-12"
 category: "infra_tools"
 ---
 
@@ -103,14 +104,28 @@ category: "infra_tools"
 
     バックグラウンドで手軽にインデックスを走らせたい場合は、以下のコマンドを実行します。
 
-    * 通常のスキャン（新しく追加された写真などを対象）:
+    - 通常のスキャン（新しく追加された写真などを対象）:
         ```bash
         docker compose exec photoprism photoprism index
 
         ```
 
-    * 完全再スキャン（Complete Rescanに相当）:
+    - 完全再スキャン（Complete Rescanに相当）:
         ```bash
         docker compose exec photoprism photoprism index -f
 
         ```
+
+- ユーザーの追加
+
+  有料版（PhotoPrism Plus / Pro）を利用している場合、Web UI（ブラウザ画面）から直接ユーザーの追加や権限管理が行えますが、無料のコミュニティ版（CE）を利用している場合、この機能が使用できません。コマンドを使って対応する必要があります。
+
+  - ターミナルから以下のコマンドを実行
+    ```bash
+    docker compose exec photoprism photoprism users add [ユーザー名]
+
+    ```
+
+    - 実行後、画面の指示に従って以下を設定します。ただし、Role（権限）：user や viewer はできません
+      - メールアドレス
+      - パスワード
