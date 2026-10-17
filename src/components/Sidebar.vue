@@ -8,6 +8,7 @@ interface Article {
   slug: string
   title: string
   date: string // ISO文字列（例: "2026-07-28T00:00:00.000Z"）
+  dateRevised?: string // 更新日（ISO文字列）。更新していない記事には存在しない
 }
 
 const props = defineProps<{
@@ -84,6 +85,26 @@ const articleDates = computed(() =>
   Array.from(new Set(props.articles.map((article) => article.date.slice(0, 10))))
 )
 
+// 更新日の一覧（dateRevised を持つ記事のみ。作成日とは別に管理する）
+const revisedDates = computed(() =>
+  Array.from(
+    new Set(
+      props.articles
+        .filter((article) => article.dateRevised)
+        .map((article) => article.dateRevised!.slice(0, 10))
+    )
+  )
+)
+
+// 選択中の日付が、記事の作成日または更新日と一致するか（記事リストの絞り込み用）
+const matchesSelectedDate = (article: Article) => {
+  if (!selectedDate.value) return true
+  return (
+    article.date.slice(0, 10) === selectedDate.value ||
+    article.dateRevised?.slice(0, 10) === selectedDate.value
+  )
+}
+
 /* -------------------------------------------------------------------------- */
 /* カレンダー描画ロジック（旧 App.vue の実装をそのまま移植）                    */
 /* -------------------------------------------------------------------------- */
@@ -103,7 +124,8 @@ const formatDate = (year: number, month: number, date: number) => {
 interface CalendarDay {
   date: number | null
   isToday: boolean
-  hasArticle: boolean
+  hasArticle: boolean // その日に作成された記事がある
+  hasRevision: boolean // その日に更新された記事がある
   fullDate: string
 }
 
@@ -120,7 +142,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
   const days: CalendarDay[] = []
 
   for (let i = 0; i < startDay; i++) {
-    days.push({ date: null, isToday: false, hasArticle: false, fullDate: '' })
+    days.push({ date: null, isToday: false, hasArticle: false, hasRevision: false, fullDate: '' })
   }
 
   for (let d = 1; d <= totalDays; d++) {
@@ -129,15 +151,17 @@ const calendarDays = computed<CalendarDay[]>(() => {
       year === today.getFullYear() && month === today.getMonth() && d === today.getDate()
 
     const hasArticle = articleDates.value.includes(fullDate)
+    const hasRevision = revisedDates.value.includes(fullDate)
 
-    days.push({ date: d, isToday, hasArticle, fullDate })
+    days.push({ date: d, isToday, hasArticle, hasRevision, fullDate })
   }
 
   return days
 })
 
+// 作成日・更新日のどちらかがある日だけクリックして絞り込める
 const handleDateClick = (day: CalendarDay) => {
-  if (!day.hasArticle) return
+  if (!day.hasArticle && !day.hasRevision) return
   setDate(day.fullDate)
 }
 
@@ -166,7 +190,7 @@ const nextMonth = () => {
     <!-- 📅 日付選択中の解除バッジ -->
     <div v-if="selectedDate" class="filter-info">
       <span class="filter-icon">📅</span>
-      <span class="filter-text">{{ selectedDate }} の記事で絞込み</span>
+      <span class="filter-text">{{ selectedDate }} に作成・更新した記事で絞込み</span>
       <button class="clear-btn" @click="clearFilter">解除</button>
     </div>
 
@@ -182,7 +206,7 @@ const nextMonth = () => {
             <li
               v-for="article in menuData[category]"
               :key="`${article.category}/${article.slug}`"
-              v-show="!selectedDate || article.date.slice(0, 10) === selectedDate"
+              v-show="matchesSelectedDate(article)"
               :class="{ active: currentCategory === article.category && currentSlug === article.slug }"
             >
               <a :href="`/posts/${article.category}/${article.slug}`">
@@ -215,12 +239,19 @@ const nextMonth = () => {
             'is-today': day.isToday,
             'empty-cell': !day.date,
             'has-article': day.hasArticle,
+            'has-revision': day.hasRevision,
             'is-selected': selectedDate === day.fullDate,
           }"
           @click="handleDateClick(day)"
         >
           {{ day.date }}
         </div>
+      </div>
+
+      <!-- 凡例：作成日と更新日を色のドットで区別する -->
+      <div class="calendar-legend">
+        <span class="legend-item"><span class="legend-dot legend-created"></span>作成日</span>
+        <span class="legend-item"><span class="legend-dot legend-revised"></span>更新日</span>
       </div>
     </div>
   </aside>
@@ -393,6 +424,19 @@ const nextMonth = () => {
   visibility: hidden;
 }
 
+/* 更新日のみの日：青系。作成日の規則より前に書き、両方ある日は作成日（緑）の背景を優先する */
+.day-cell.has-revision {
+  cursor: pointer;
+  font-weight: 700;
+  color: #1d4f86;
+  background-color: rgba(47, 111, 176, 0.2);
+}
+
+.day-cell.has-revision:hover {
+  background-color: rgba(47, 111, 176, 0.32);
+}
+
+/* 作成日の日：緑系 */
 .day-cell.has-article {
   cursor: pointer;
   font-weight: 700;
@@ -400,19 +444,45 @@ const nextMonth = () => {
   background-color: rgba(111, 168, 143, 0.22);
 }
 
-/* 「記事のある日」を色以外でも判別できるよう、下に小さな点を追加 */
-.day-cell.has-article::after {
+.day-cell.has-article:hover {
+  background-color: rgba(111, 168, 143, 0.36);
+}
+
+/* 作成日・更新日を色だけに頼らず、形でも判別できるようにする
+   ::after = 作成日（緑の丸）、::before = 更新日（青のひし形） */
+.day-cell.has-article::after,
+.day-cell.has-revision::before {
   content: '';
   position: absolute;
   bottom: 3px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background-color: var(--color-lamp-green, #6fa88f);
+  left: 50%;
 }
 
-.day-cell.has-article:hover {
-  background-color: rgba(111, 168, 143, 0.36);
+/* 作成日：丸（6px） */
+.day-cell.has-article::after {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #3f7d62;
+  transform: translateX(-50%);
+}
+
+/* 更新日：ひし形（5pxの正方形を45度回転。対角線は約7pxで、丸と見た目の大きさが揃う） */
+.day-cell.has-revision::before {
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background-color: #2f6fb0;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* 作成日と更新日が同じ日にある場合は、丸とひし形を左右に並べる */
+.day-cell.has-article.has-revision::after {
+  transform: translateX(calc(-50% - 6px));
+}
+
+.day-cell.has-article.has-revision::before {
+  transform: translateX(calc(-50% + 6px)) rotate(45deg);
 }
 
 .day-cell.is-today {
@@ -425,8 +495,51 @@ const nextMonth = () => {
   color: #1b241f !important;
 }
 
+/* 選択中は背景が緑になるため、点の色を背景から浮く色に変える */
 .day-cell.is-selected::after {
   background-color: #1b241f;
+}
+
+.day-cell.is-selected::before {
+  background-color: #f5f0e3;
+}
+
+/* 凡例（作成日・更新日） */
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #6b4f28;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  display: inline-block;
+}
+
+/* 作成日：丸 */
+.legend-created {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #3f7d62;
+}
+
+/* 更新日：ひし形（回転で左右にはみ出すぶん、余白を足す） */
+.legend-revised {
+  width: 5px;
+  height: 5px;
+  margin: 0 1px;
+  border-radius: 1px;
+  background-color: #2f6fb0;
+  transform: rotate(45deg);
 }
 
 /* 絞り込み状態を表示するエリア全体 */
