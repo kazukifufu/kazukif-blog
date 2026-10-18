@@ -60,9 +60,9 @@ const menuData = computed(() => {
 // 最初の記事の日付順になってしまうため、カテゴリ名だけを別途ソートして使う）
 const sortedCategoryNames = computed(() => Object.keys(menuData.value).sort())
 
-// 初期状態では全カテゴリーを展開（旧 App.vue の onMounted 内処理を移植）
+// 初期状態では全カテゴリーを閉じておく（クリックで開閉する）
 const expandedCategories = ref<Record<string, boolean>>(
-  Object.fromEntries(Object.keys(menuData.value).map((cat) => [cat, true]))
+  Object.fromEntries(Object.keys(menuData.value).map((cat) => [cat, false]))
 )
 
 const toggleCategory = (category: string) => {
