@@ -424,16 +424,16 @@ const nextMonth = () => {
   visibility: hidden;
 }
 
-/* 更新日のみの日：青系。作成日の規則より前に書き、両方ある日は作成日（緑）の背景を優先する */
+/* 更新日のみの日：朱・橙系。作成日の規則より前に書き、両方ある日は作成日（緑）の背景を優先する */
 .day-cell.has-revision {
   cursor: pointer;
   font-weight: 700;
-  color: #1d4f86;
-  background-color: rgba(47, 111, 176, 0.2);
+  color: #8f3f10;
+  background-color: rgba(194, 87, 26, 0.18);
 }
 
 .day-cell.has-revision:hover {
-  background-color: rgba(47, 111, 176, 0.32);
+  background-color: rgba(194, 87, 26, 0.3);
 }
 
 /* 作成日の日：緑系 */
@@ -449,7 +449,7 @@ const nextMonth = () => {
 }
 
 /* 作成日・更新日を色だけに頼らず、形でも判別できるようにする
-   ::after = 作成日（緑の丸）、::before = 更新日（青のひし形） */
+   ::after = 作成日（緑の丸）、::before = 更新日（朱・橙のひし形） */
 .day-cell.has-article::after,
 .day-cell.has-revision::before {
   content: '';
@@ -472,7 +472,7 @@ const nextMonth = () => {
   width: 5px;
   height: 5px;
   border-radius: 1px;
-  background-color: #2f6fb0;
+  background-color: #c2571a;
   transform: translateX(-50%) rotate(45deg);
 }
 
@@ -538,7 +538,7 @@ const nextMonth = () => {
   height: 5px;
   margin: 0 1px;
   border-radius: 1px;
-  background-color: #2f6fb0;
+  background-color: #c2571a;
   transform: rotate(45deg);
 }
 

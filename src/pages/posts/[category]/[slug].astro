@@ -23,7 +23,7 @@ const { Content } = await render(post);
   <article class="markdown-body">
     <h1>{post.data.title}</h1>
     <p class="post-meta">
-      カテゴリ: {post.data.category} / 作成日: {post.data.date.toLocaleDateString('ja-JP')}
+      {post.data.category} / 作成日: {post.data.date.toLocaleDateString('ja-JP')}
       {post.data.dateRevised && (
         <>
           {' / '}
@@ -99,6 +99,6 @@ const { Content } = await render(post);
     line-height: 1.4;
   }
   .date-revised {
-    color: #2f6fb0;
+    color: #c2571a;
   }
 </style>
