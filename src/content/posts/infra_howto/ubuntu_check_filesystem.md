@@ -1,5 +1,5 @@
 ---
-title: "Ubuntu: ファイルシステム(ext4, XFS)のチェック"
+title: "[Ubuntu] ファイルシステム(ext4, XFS)のチェック"
 date: "2026-10-08"
 category: "infra_howto"
 ---
