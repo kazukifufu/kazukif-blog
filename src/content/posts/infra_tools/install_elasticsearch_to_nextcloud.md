@@ -1,7 +1,9 @@
 ---
 title: "Nextcloudに全文検索(Elasticsearch)機能を追加する"
 date: "2026-10-22"
-dateRevised: "2026-10-23"
+dateRevised:
+  - "2026-10-23"
+  - "2026-10-24"
 category: "infra_tools"
 ---
 
@@ -306,3 +308,40 @@ category: "infra_tools"
       確認ポイント:
       docs.count: インデックスされたファイルの総数
       store.size: Elasticsearchが消費しているストレージの容量
+
+- Nextcloud のログファイルでの確認
+
+  エラーや直近の処理状況を確認したい場合は、Nextcloudのログファイル（data/nextcloud.log）をチェックするか、occコマンドのログ出力を参照します。
+
+  ```bash
+  # ログをリアルタイムで確認する場合（Docker環境）
+  docker exec -it -u www-data nextcloud-app tail -n 100 /var/www/html/data/nextcloud.log
+  ```
+
+- インデックス作成でエラーとなったファイルの特定方法
+  - 表示されるError(例)
+    ┌─ Errors ────
+    │ Error:      8/8
+    │ Index: files:9483
+    │ Exception: OCA\FullTextSearch_Elasticsearch\Vendor8\Elastic\Elasticsearch\Exception\ClientResponseException
+    │ Message: unknown error
+    │ 
+    │ 
+    └──
+
+  - 対象ファイルの特定
+  ```bash
+  $ docker exec -it nextcloud-db mariadb -u nextcloud -pXXXXX nextcloud -e "SELECT fileid, path, mimetype FROM oc_filecache WHERE fileid = 9483;"
+  ```
+
+  以下の結果が表示され、pathの情報として該当ファイル名の確認ができる
+    +--------+-------------------------------------------+----------+
+    | fileid | path                                      | mimetype |
+    +--------+-------------------------------------------+----------+
+    |   9483 | Books/StandardForPortfolioMgmtThirdEd.pdf |        6 |
+    +--------+-------------------------------------------+----------+
+
+  - 考えられる原因
+
+    パスが判明したら、以下のような原因が考えられます。不要なファイルやバックアップデータであれば、そのファイル（または親フォルダ）の階層に空の .noindex ファイルを置くことで、次回のインデックス作成から除外できます。
+    - 極端に重いファイル、または破損・パスワード付きの PDF / Office 文書
