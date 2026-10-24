@@ -1,6 +1,7 @@
 ---
 title: "Nextcloudに全文検索(Elasticsearch)機能を追加する"
 date: "2026-10-22"
+dateRevised: "2026-10-23"
 category: "infra_tools"
 ---
 
@@ -180,3 +181,128 @@ category: "infra_tools"
     MYSQL_PASSWORD=xxxxx
     MYSQL_ROOT_PASSWORD=yyyyy
     ```
+
+- Elasticsearchの稼働確認
+  - コンテナのビルドと起動
+    ```bash
+    docker compose up -d --build
+    ```
+
+  - Elasticsearchコンテナ起動状況の確認
+
+    Elasticsearchコンテナが正常に起動し、日本語プラグインなどが正しく読み込まれているかは、「コンテナのステータス確認」「内部ログの検証」「APIの応答テスト」の3つのステップで確実に確認
+
+    - コンテナが生存しているか（ステータス確認）
+      ```bash
+      docker compose ps
+      ```
+       - 正常な場合の表示例:
+         nextcloud-elasticsearch の STATUS が Up (健康状態) または Up [時間] になっていれば第一関門クリアです。もし Exited (1) などで終了している場合は、起動に失敗しています。
+
+    - エラーが出ていないか（ログ確認）
+
+      コンテナは動いていても、内部でエラーを吐き続けているケースがあります。ログを表示して、最後の数行に致命的なエラーがないか確認します。
+      ```bash
+      docker compose logs elasticsearch --tail=50
+      ```
+      - チェックポイント:
+        ログの最後に [nextcloud-elasticsearch] o.e.n.Node started という一文があれば、クラッシュせず完全に起動が完了しています。Exception や Error、AccessDeniedException などの文字列が出ていなければ正常です。
+
+    - APIが応答するか（疎通・プラグイン確認）
+
+      これが最も確実な確認方法です。同じDockerネットワーク内にいる app（Nextcloud）コンテナの視点から、ElasticsearchのAPIを叩いて応答が返ってくるかをテストします。
+      ```bash
+      docker compose exec app curl -X GET "http://elasticsearch:9200/_cat/plugins?v"
+      ```
+
+      - 正常な場合の応答例:成功すると、以下のように導入されているプラグインの一覧（analysis-kuromoji）がテーブル形式で返ってきます。
+      ```text
+      component         version
+      analysis-kuromoji 8.19.23
+      ```
+
+      ```bash
+      docker compose exec app curl -X GET "http://elasticsearch:9200/_nodes/ingest?pretty"
+      ```
+
+      このコマンドを実行するとコンテナ情報が詳細に返ってきます。その中の processors のリスト内に "type": "attachment" が存在していれば、ingest-attachment プラグイン内部で無事に有効化されています。
+
+
+- Nextcloud内でのアプリインストール
+  - Nextcloudに管理者アカウントでログインし、「アプリ」 画面から以下の3つのアプリを検索してインストール（有効化）
+    - Full text search
+    - Full text search - Elasticsearch Platform
+    - Full text search - Files
+
+  - 管理画面での検索設定
+
+    Nextcloudの 「管理設定」→「全文検索 (Full text search)」 を開き、以下のように設定
+    - 検索プラットフォーム (Search platform): Elasticsearch
+    - サーブレットのアドレス (Address of the servlet): http://elasticsearch:9200（※Compose内のサービス名がホスト名になります）
+    - インデックス名 (Index): nextcloud（任意）
+    - Analyzer / Tokenizer: kuromoji（※ここを必ず kuromoji に変更。これで日本語が正しく検索できるようになる）
+    - Files - Sources - External Files: Index path and content
+    - その他のオプション（PDFの抽出、Officeドキュメントの抽出など）にもチェック
+
+- NextcloudとElasticsearchの接続確認
+
+  ```bash
+  docker compose exec --user www-data app php occ fulltextsearch:test
+  ```
+  モックデータを使ったインデックス作成・検索テストが実行され、すべての項目で ok が返れば成功
+
+- 不要な拡張子（動画や音楽など）を除外する
+
+  ```bash
+  docker compose exec --user www-data app php occ fulltextsearch:configure '{"files_excluded_extensions":["mp4","mkv","avi","mov","mp3","wav","flac","zip","tar","gz","rar","iso","img","exe"]}'
+  ```
+
+- 初回インデックスの作成
+  ```bash
+  # Nextcloudのコンテナ名を確認して実行（例: appコンテナの場合）
+  docker compose exec --user www-data nextcloud php occ fulltextsearch:index
+  # メモリ制限を 1GB に引き上げてインデックスを再開・続行
+  docker exec -it -u www-data nextcloud-app php -d memory_limit=1G occ fulltextsearch:index
+  # メモリが足りなくなる場合は、-d memory_limit=-1（無制限）に設定して実行
+  docker exec -it -u www-data nextcloud-app php -d memory_limit=-1 occ fulltextsearch:index
+  ```
+
+  - インデックスの状態をリセットする方法
+
+    もし途中でインデックス処理が中途半端に壊れてしまった場合は、以下のコマンドで一度リセットしてから、.noindex などの除外設定を行った上でやり直すとスムーズです。
+    ```bash
+    # 検索インデックスの停止・リセット
+    docker exec -it -u www-data nextcloud-app php occ fulltextsearch:stop
+    docker exec -it -u www-data nextcloud-app php occ fulltextsearch:reset
+
+    # メモリを拡張して再インデックス
+    docker exec -it -u www-data nextcloud-app php -d memory_limit=1G occ fulltextsearch:index
+    ```
+
+  - Full text search（全文検索）におけるインデックスの状況や進捗の確認方法
+    - OCCコマンドによる実行中の進捗確認
+
+      インデックス処理コマンド（php occ fulltextsearch:index）を実行している最中は、画面上にリアルタイムのステータスが表示されます。
+      確認できる内容:
+      現在処理中のユーザーやファイルパス
+      処理の進捗（例：Progress: 150000/341587 のような件数）
+      使用メモリ量（例：Memory: 486 MB）
+      発生したエラーの件数や詳細
+
+    - OCCコマンドによる状態の確認
+
+      ```bash
+      docker exec -it -u www-data nextcloud-app php occ fulltextsearch:check
+      ```
+
+    - Elasticsearch（バックエンド）側でのデータ蓄積状況の確認
+
+      Elasticsearchの中に実際にどれだけのインデックス（ドキュメント）が保存されているかは、Elasticsearchコンテナに対して直接問い合わせることで確認できる
+
+      ```bash
+      docker exec -it nextcloud-elasticsearch curl -X GET "http://localhost:9200/_cat/indices?v"
+      ```
+
+      確認ポイント:
+      docs.count: インデックスされたファイルの総数
+      store.size: Elasticsearchが消費しているストレージの容量
