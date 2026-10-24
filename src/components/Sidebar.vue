@@ -8,7 +8,7 @@ interface Article {
   slug: string
   title: string
   date: string // ISO文字列（例: "2026-07-28T00:00:00.000Z"）
-  dateRevised?: string // 更新日（ISO文字列）。更新していない記事には存在しない
+  dateRevised?: string[] // 更新日（ISO文字列のリスト）。更新していない記事には存在しない
 }
 
 const props = defineProps<{
@@ -85,23 +85,22 @@ const articleDates = computed(() =>
   Array.from(new Set(props.articles.map((article) => article.date.slice(0, 10))))
 )
 
-// 更新日の一覧（dateRevised を持つ記事のみ。作成日とは別に管理する）
+// 更新日の一覧（全記事の更新日をまとめ、重複を除く。作成日とは別に管理する）
+// 1つの記事が複数の更新日を持つため、flatMap で1次元の配列に展開する
 const revisedDates = computed(() =>
   Array.from(
     new Set(
-      props.articles
-        .filter((article) => article.dateRevised)
-        .map((article) => article.dateRevised!.slice(0, 10))
+      props.articles.flatMap((article) => article.dateRevised ?? []).map((d) => d.slice(0, 10))
     )
   )
 )
 
-// 選択中の日付が、記事の作成日または更新日と一致するか（記事リストの絞り込み用）
+// 選択中の日付が、記事の作成日またはいずれかの更新日と一致するか（記事リストの絞り込み用）
 const matchesSelectedDate = (article: Article) => {
   if (!selectedDate.value) return true
   return (
     article.date.slice(0, 10) === selectedDate.value ||
-    article.dateRevised?.slice(0, 10) === selectedDate.value
+    (article.dateRevised ?? []).some((d) => d.slice(0, 10) === selectedDate.value)
   )
 }
 

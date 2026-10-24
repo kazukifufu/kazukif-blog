@@ -8,7 +8,17 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    dateRevised: z.coerce.date().optional(),
+    // 更新日。日付1つ（従来どおり）でも、複数日のリストでも書ける。
+    // どちらの場合も、古い順に並べた Date[] に揃えて扱う。
+    // 配列を先に試すのは、z.coerce.date() が配列を日付に変換しようとするのを避けるため。
+    dateRevised: z
+      .union([z.array(z.coerce.date()), z.coerce.date()])
+      .transform((value) =>
+        [...(Array.isArray(value) ? value : [value])].sort(
+          (a, b) => a.valueOf() - b.valueOf()
+        )
+      )
+      .optional(),
     category: z.enum([
       'web-dev',
       'infra',

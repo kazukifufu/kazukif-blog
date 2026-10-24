@@ -17,8 +17,8 @@ const articles = posts.map((post) => {
     slug,
     title: post.data.title,
     date: post.data.date.toISOString(), // Date -> ISO文字列に変換してpropsへ
-    // 更新日（任意項目）。未設定の記事は undefined のまま渡す
-    dateRevised: post.data.dateRevised?.toISOString(),
+    // 更新日（任意項目）。複数日を持つ場合があるため、配列のまま渡す。未設定の記事は undefined
+    dateRevised: post.data.dateRevised?.map((d) => d.toISOString()),
   };
 });
 ---

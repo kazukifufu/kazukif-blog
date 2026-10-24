@@ -23,12 +23,12 @@ const { Content } = await render(post);
   <article class="markdown-body">
     <h1>{post.data.title}</h1>
     <p class="post-meta">
-      {post.data.category} / 作成日: {post.data.date.toLocaleDateString('ja-JP')}
-      {post.data.dateRevised && (
+      カテゴリ: {post.data.category} / 作成日: {post.data.date.toLocaleDateString('ja-JP')}
+      {post.data.dateRevised && post.data.dateRevised.length > 0 && (
         <>
           {' / '}
           <span class="date-revised">
-            更新日: {post.data.dateRevised.toLocaleDateString('ja-JP')}
+            更新日: {post.data.dateRevised.map((d) => d.toLocaleDateString('ja-JP')).join('、')}
           </span>
         </>
       )}
