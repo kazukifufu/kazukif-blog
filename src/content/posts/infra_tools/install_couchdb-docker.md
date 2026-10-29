@@ -72,7 +72,7 @@ category: "infra_tools"
       environment:
         # CouchDB の管理者ユーザー名。
         # Obsidian LiveSync の接続設定で使用する。
-        - COUCHDB_USER=admin
+        - COUCHDB_USER=couchdb_admin
 
         # パスワードを直接記述するのではなく .env ファイルで管理する
         #
@@ -134,6 +134,9 @@ category: "infra_tools"
     # Added essential CouchDB replication headers required by LiveSync
     headers = accept, authorization, content-type, origin, referer, x-csrf-token, X-Couch-Full-Commit, If-Match
 
+    [cluster]
+    n = 1
+    
     [couchdb]
     # to create system DBs ex. _users
     single_node = true

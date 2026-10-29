@@ -63,7 +63,9 @@ category: "infra_howto"
     {database_does_not_exist,[{mem3_shards,load_from_db,[<<"_users">>],...
 
     ```
-
+    - local.iniの[couchdb]セクションにsingle_node = trueを指定している場合は、自動的に作成されるため、本エラーは発生しない
+    - local.iniに[cluster]セクションを追加し、n = 1 を指定することで、下記のSingle-Node Setupも不要になる
+    
     > ⚠️ **原因**
     > CouchDB の稼働に必要なシステムデータベース(`_users` や `_replicator`)が存在しないため、認証キャッシュ処理でエラーが発生しています。
 
