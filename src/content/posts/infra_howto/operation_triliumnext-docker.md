@@ -1,6 +1,6 @@
 ---
 title: "[Trilium] Docker版Trilium Notesが強制再起動後に言語設定画面になった場合の復旧手順(Ubuntu 26.04 LTS)"
-date: "2026-10-26"
+date: "2026-11-16"
 category: "infra_howto"
 ---
 
